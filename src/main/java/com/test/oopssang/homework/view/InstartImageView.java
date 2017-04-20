@@ -7,6 +7,8 @@ import android.view.WindowManager;
 
 /**
  * Created by sang on 2017-04-18.
+ * Viewer에 사용될 ImageView
+ * onMeasure() 를 통해 width size에 비례하도록 height size 조정
  */
 
 public class InstartImageView extends android.support.v7.widget.AppCompatImageView {
