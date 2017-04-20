@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 /**
  * Created by sang on 2017-04-19.
+ * 상세화면 Fragment
  */
 
 public class DetailFragment extends Fragment {

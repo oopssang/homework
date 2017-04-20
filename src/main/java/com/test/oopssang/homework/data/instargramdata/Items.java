@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 /**
  * Created by sang on 2017-04-19.
+ *  * Instartgram   media Api의 responce가 저장될 VO
  */
 
 public class Items {

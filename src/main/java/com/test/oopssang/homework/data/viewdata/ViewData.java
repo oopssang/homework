@@ -5,6 +5,11 @@ import android.os.Parcelable;
 
 /**
  * Created by sang on 2017-04-19.
+ *  이미지표시 시, 사용될 Data
+ * @imageUrl 인스타그램 이미지 url   standard_resolution size의 이미지 사용
+ * @width 이미지 가로 사이즈
+ * @heigth 이미지 세로 사이즈
+ * @id item ID
  */
 
 public class ViewData implements Parcelable {

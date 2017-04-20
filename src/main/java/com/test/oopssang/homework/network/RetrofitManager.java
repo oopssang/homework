@@ -10,6 +10,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitManager{
     private final static String BASE_URL_INSTAGRAM = "https://www.instagram.com/";
 
+    /**
+     * @return InstargramService 리턴.
+     */
     public static InstargramService getInstargramService(){
         StringBuilder builder = new StringBuilder();
         builder.append(BASE_URL_INSTAGRAM);

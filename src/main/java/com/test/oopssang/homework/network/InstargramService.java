@@ -15,6 +15,12 @@ public interface InstargramService {
     @GET("{user_id}/media/")
     Call<Items> getdata(@Path("user_id") String user_id);
 
+    /**
+     * Instargram media API 연동
+     * @param user_id  Instargram userID
+     * @param max_id 게시물 ID   default "0" or null
+     * @return
+     */
     @GET("{user_id}/media/")
     Call<Items> getdata(@Path("user_id") String user_id, @Query("max_id") String max_id);
 }
