@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.test.oopssang.homework.MainActivity">
+
+    <EditText
+        android:id="@+id/search_edit"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginRight="50dp"
+        android:maxLines="1"
+        android:focusable="true"
+        android:hint="Instargram ID를 입력하세요." />
+
+    <ImageButton
+        android:id="@+id/search_btn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:background="@mipmap/search" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/search_edit"
+        android:background="#ffc"
+        android:focusable="true" />
+
+    <include
+        android:id="@+id/loading"
+        layout="@layout/layout_loading_footer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
+
+    <RelativeLayout
+        android:id="@+id/fragment_area"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"/>
+
+
+</RelativeLayout>
