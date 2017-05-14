@@ -3,9 +3,11 @@ package com.test.oopssang.homework;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -22,6 +24,7 @@ import com.test.oopssang.homework.utils.Utils;
 
 import java.util.ArrayList;
 
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,9 +39,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private InstargramService mService;
     private ArrayList<ViewData> mListData;
     private Fragment mFragment;
-    LinearLayoutManager mLayoutManager;
+    StaggeredGridLayoutManager mLayoutManager;
     private boolean mMoreAvailable = false;
     private String mUserid;
+
+    /**
+     * View 모양이 StaggeredGridLayout일때, LastView Index 체크용
+     */
+    int[] temp = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +84,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSearchView = (ImageView) findViewById(R.id.search_btn);
         mEditText = (EditText) findViewById(R.id.search_edit);
         mRecyclerView = (RecyclerView) findViewById(R.id.listview);
-        mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//        mLayoutManager = new LinearLayoutManager(getApplicationContext());
+//        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mLayoutManager = new StaggeredGridLayoutManager(2, 1);
+        mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        mLayoutManager.setOrientation(StaggeredGridLayoutManager.VERTICAL);
+
+
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mSearchView.setOnClickListener(this);
@@ -90,22 +103,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         mRecyclerView.setAdapter(mRecyclerAdapter);
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        temp = new int[mLayoutManager.getSpanCount()];
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if(mMoreAvailable){
                     int totalItemCount = mLayoutManager.getItemCount();
-                    int lastVisibleItemPosition = mLayoutManager.findLastCompletelyVisibleItemPosition();
-                    if(totalItemCount >0 && lastVisibleItemPosition != RecyclerView.NO_POSITION && (totalItemCount -1 <= lastVisibleItemPosition)){
+//                    int lastVisibleItemPosition = mLayoutManager.findLastCompletelyVisibleItemPosition();
+//                    if(totalItemCount >0 && lastVisibleItemPosition != RecyclerView.NO_POSITION && (totalItemCount -1 <= lastVisibleItemPosition)){
+//                        // data 추가 요청
+//                        Log.e("sang", "data 추가 요청 ");
+//                        startRetrofit(mUserid, mListData.get(mListData.size() - 1).getId());
+//                    }
+                    temp = mLayoutManager.findLastVisibleItemPositions(temp);
+                    int tempindex =  temp[0] > temp[1] ? temp[0] : temp[1];
+                    if(totalItemCount >0 && tempindex != RecyclerView.NO_POSITION && (totalItemCount -1 <= tempindex) ){
                         // data 추가 요청
                         Log.e("sang", "data 추가 요청 ");
-                        startRetrofit(mUserid, mListData.get(mListData.size() - 1).getId());
+                        mStartRetrofitHandler.removeMessages(100);
+                        mStartRetrofitHandler.sendEmptyMessageDelayed(100,100);
                     }
                 }
             }
         });
     }
+
+    /**
+     * 잦은 onScrolled Event로 인해 API 중복 호출이 발생함. 이를 막기위해 Handler 사용.
+     */
+    Handler mStartRetrofitHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            startRetrofit(mUserid, mListData.get(mListData.size() - 1).getId());
+        }
+    };
 
     private void startDetailFragment(int position){
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -141,10 +174,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onResponse(Call<Items> call, Response<Items> response) {
                 mLoading.setVisibility(View.GONE);
                 Items result = response.body();
+
                 if (result != null) {
                     if(mListData == null){
                         mListData = Utils.changeData(result.getItem());
                     }else{
+                        Log.e("sang", "onResponse mListData size :  " + mListData.size());
                         Utils.addData(mListData, result.getItem());
                     }
                     mMoreAvailable = result.isMore_available();
